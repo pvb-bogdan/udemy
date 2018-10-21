@@ -37,7 +37,7 @@ class EasyHTTP {
     return resData;
   }
 
-  // make a delete request
+  // make a delete request with await and async
   async delete(url){
     const response = await fetch(url, {
       method: 'DELETE',
