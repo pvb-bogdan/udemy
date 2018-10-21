@@ -26,7 +26,7 @@ class EasyHTTP {
     return resData;
   }
 
-  // Make an http put/update request
+  // Make an http put/update request await and async
   async put(url, data){
     const response = await fetch(url, {
       method: 'PUT',
