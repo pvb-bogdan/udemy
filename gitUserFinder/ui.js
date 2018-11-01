@@ -13,7 +13,7 @@ class UI {
           <div class="col-md-9">
             <span class="badge badge-primary p-2">Public Repos: ${user.public_repos}</span>
             <span class="badge badge-secondary p-2">Public Gists: ${user.gists}</span>
-            <span class="badge badge-success p-2">Faollowers: ${user.followers}</span>
+            <span class="badge badge-success p-2">Fallowers: ${user.followers}</span>
             <ul class="list-group mt-4">
               <li class="list-group-item">Company: ${user.company}</li>
               <li class="list-group-item">Website: <a href="${user.blog}" target="_blank">visit my website</a></li>
