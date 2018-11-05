@@ -14,7 +14,7 @@ const user = {email: 'petre@gmail.com'};
     // decodeURIComponent('%');
 
     // error by throw word
-    if(!user.name){
+    if(!user.email){
       // throw 'User has no name';
       throw new SyntaxError('User has no name');
     }
