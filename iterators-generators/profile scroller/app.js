@@ -1,50 +1,85 @@
-// const data = getJson(name);
+const data = [
+  {
+    "name" : "Mircea Angehlescu",
+    "age" : 32,
+    "gender" : "barbat",
+    "lookingfor" : "femeie",
+    "location" : "Cluj-Napoca, CJ",
+    "image" : " https://randomuser.me/api/portraits/men/45.jpg"
+  },
+  {
+    "name" : "Maria Popa",
+    "age" : 28,
+    "gender" : "femeie",
+    "lookingfor" : "brbat",
+    "location" : "Tecuci, Gl",
+    "image" : " https://randomuser.me/api/portraits/women/35.jpg"
+  },
+  {
+    "name" : "Lazar Auguztin",
+    "age" : 44,
+    "gender" : "barbat",
+    "lookingfor" : "femeie",
+    "location" : "Alba Iulia, AB",
+    "image" : " https://randomuser.me/api/portraits/men/3.jpg"
+  },
+  {
+    "name" : "Flori Paraschiv",
+    "age" : 33,
+    "gender" : "femeie",
+    "lookingfor" : "barbat",
+    "location" : "Bucuresti, B",
+    "image" : " https://randomuser.me/api/portraits/women/45.jpg"
+  }
+]
 
-// function getJson(){
-//   fetch('api.json')
-//     .then(function(res){
-//      return res.json()
-//     })
-//     .then(function(param){
-//       console.log(param);
-//     })
-//     // .catch(function(err){
-//     //   console.log('the fuck?');
-//     // });
-// }
+// create a variable
 
-async function getUsers(){
-  // here we wait from fetch call
-  const response = await fetch('api.json');
-  // usually we need to use .then()twice, but now whit await is not need
+const profiles = profileIterator(data);
 
-  // here we wait an only proceed once its resolved
-  const data = await response.json();
-  // only proceed once second promise in\s resolved
-  return data
+// call first profile on page reload or initially to have something on page first, and when the profiles end  on reload to starts again
+nextProfile();
+
+// next event
+
+document.getElementById('next').addEventListener('click', nextProfile);
+
+// Next progfile display
+
+function nextProfile () {
+  const profilulCurent = profiles.next().value;
+
+  if(profilulCurent !== undefined){
+    document.getElementById('profile-display').innerHTML = `
+    <ul class="list-group">
+      <li class="list-group-item">Nume: ${profilulCurent.name}</li>
+      <li class="list-group-item">Varsta: ${profilulCurent.age}</li>
+      <li class="list-group-item">Sex: ${profilulCurent.gender}</li>
+      <li class="list-group-item">Cauta: ${profilulCurent.lookingfor}</li>
+      <li class="list-group-item">Locatie: ${profilulCurent.location}</li>
+    </ul>
+  `;
+  document.getElementById('img-display').innerHTML = `<img src="${profilulCurent.image}">`
+  } else {
+    // reload window
+    window.location.reload();
+  }
+
 }
+//create iterate function 
 
-// getUsers().then(data => console.log(data[1].image));
-getUsers().then( function(data) {
-  return data
-}).then(function(res){
-  console.log(res[1].name);
-})
-;
-// console.log(getUsers())
-const profiles = profileiterator(getUsers());
-
-console.log(profiles.next());
-
-function profileiterator(profiles){
-  let nextindex = 0;
+function profileIterator(profiles){
+  let nextIndex = 0;
 
   return {
-    next: function() {
-      return nextindex < profiles.length ?
-      { value: profiles[nextindex++], done:false } :
-      { done:true }
+    next: function (){
+      return nextIndex < profiles.length ?
+      {
+        value :profiles[nextIndex++], done:false
+      }:
+      {
+        done: true
+      }
     }
   }
 }
-
