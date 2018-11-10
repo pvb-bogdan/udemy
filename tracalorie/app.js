@@ -9,7 +9,7 @@ const ItemCtrl = (function(){
     this.calories = calories;
   }
 
-  //Data structure -or state
+  //Data structure or state structure
   const data = {
     items: [
       {id: 0, name: 'Friptura Porc', calories: 1200},
@@ -22,6 +22,9 @@ const ItemCtrl = (function(){
 
   // Public methods
   return {
+    getItems: function() {
+      return data.items;
+    },
     logData: function() {
       return data;
     }
@@ -31,11 +34,30 @@ const ItemCtrl = (function(){
 
 // UI CONTROLLER
 const UICtrl = (function(){
-  
+  // create an ob to update selector if trough project in html will change selectors(clases or id or etc) , we need to update just here
+  const UISelectors = {
+    itemList: '#item-list'
+  }
 
   // Public methods
   return {
+    populateItemsList: function(items) {
+      // need items from ItemCtrl data - array of obj so we must loop
+      // init a var to append at html list
+      let html = '';
 
+      items.forEach(function(item){
+        html += `<li class="collection-item" id="item-${item.id}">
+        <b>${item.name}: </b> <em> ${item.calories} Calories</em>
+        <a href="#" class="secondary-content">
+          <i class="fa fa-pencil edit-item"></i>
+        </a>
+      </li>`;
+      });
+
+      //Insert li to ul in html
+      document.querySelector(UISelectors.itemList).innerHTML = html;
+    }
   }
 })();
 
@@ -48,7 +70,12 @@ const App = (function(ItemCtrl, UICtrl){
   // Public methods
   return {
     init: function(){
-      console.log('App initializata');
+      // console.log('App initializata');
+      // fetch items from ItemCtrl data structure
+      const items = ItemCtrl.getItems();
+
+      // poppulate list with items
+      UICtrl.populateItemsList(items);
     }
   }
 })(ItemCtrl, UICtrl); // invoc them at start
