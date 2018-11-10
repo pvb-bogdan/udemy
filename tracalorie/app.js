@@ -25,6 +25,25 @@ const ItemCtrl = (function(){
     getItems: function() {
       return data.items;
     },
+    addItem: function(name, calories){
+      // we need to generate an id to 
+      let ID;
+
+      if(data.items.length > 0){
+        ID = data.items[data.items.length - 1].id + 1;
+      } else {
+        ID = 0;
+      }
+      
+      // calories to number -because calorie input will be a string
+      calories = parseInt(calories);
+      // create a new item with new Item construcotr
+      newItem = new Item(ID, name, calories);
+      // push items array
+      data.items.push(newItem);
+      return newItem;
+    },
+
     logData: function() {
       return data;
     }
@@ -36,7 +55,10 @@ const ItemCtrl = (function(){
 const UICtrl = (function(){
   // create an ob to update selector if trough project in html will change selectors(clases or id or etc) , we need to update just here
   const UISelectors = {
-    itemList: '#item-list'
+    itemList: '#item-list',
+    addBtn: '.add-btn',
+    itemNameInput: '#item-name',
+    itemCaloriesInput: '#item-calories'
   }
 
   // Public methods
@@ -57,6 +79,15 @@ const UICtrl = (function(){
 
       //Insert li to ul in html
       document.querySelector(UISelectors.itemList).innerHTML = html;
+    },
+    getItemInput: function () {
+      return {
+        name: document.querySelector(UISelectors.itemNameInput).value,
+        calories: document.querySelector(UISelectors.itemCaloriesInput).value
+      }
+    },
+    getSelectors:function () {
+      return UISelectors;
     }
   }
 })();
@@ -65,7 +96,29 @@ const UICtrl = (function(){
 // APP CONTROLLER
 // we need to insert all of the modules/ controlers above in app ctrl to bind them into app
 const App = (function(ItemCtrl, UICtrl){
-  // console.log(ItemCtrl.logData());
+  // create a load event listeners
+  const loadEventListeners = function (){
+    // get UI selectors
+    const UISelectors = UICtrl.getSelectors();
+
+    // Add item event
+    document.querySelector(UISelectors.addBtn).addEventListener('click', itemAddSubmit);
+  }
+
+  // Add item submit
+  const itemAddSubmit = function (e){
+    // get form input from UICtrl
+    const input = UICtrl.getItemInput();
+    // check for name and calories input
+    if(input.name !== '' && input.calories !== '') {
+      // add item
+      const newItem = ItemCtrl.addItem(input.name, input.calories);
+    }
+
+
+
+    e.preventDefault();
+  }
 
   // Public methods
   return {
@@ -76,6 +129,9 @@ const App = (function(ItemCtrl, UICtrl){
 
       // poppulate list with items
       UICtrl.populateItemsList(items);
+
+      // call event listeners
+      loadEventListeners();
     }
   }
 })(ItemCtrl, UICtrl); // invoc them at start
