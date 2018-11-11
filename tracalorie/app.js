@@ -54,6 +54,34 @@ const ItemCtrl = (function(){
       });
       return found;
     },
+    updateItem: function (name, calories) {
+      // calories to number - because it comes from form as a string
+      calories = parseInt(calories);
+
+      let found = null;
+
+      data.items.forEach(function(item){
+        if(item.id === data.currentItem.id){
+          item.name = name;
+          item.calories = calories;
+          found = item;
+        }
+      })
+      return found;
+    },
+    deleteItem: function (id){
+      // get ids with map()
+      const ids = data.items.map(function(item){
+        return item.id
+      });
+
+      // get index
+      const index = ids.indexOf(id);
+
+      // remove item 
+      data.item.splice(1);
+
+    },
     setCurrentItem: function(item){
       data.currentItem = item
     },
@@ -88,6 +116,7 @@ const UICtrl = (function(){
   // create an ob to update selector if trough project in html will change selectors(clases or id or etc) , we need to update just here
   const UISelectors = {
     itemList: '#item-list',
+    listItems: '#item-list li',
     addBtn: '.add-btn',
     updateBtn: '.update-btn',
     deleteBtn: '.delete-btn',
@@ -140,7 +169,24 @@ const UICtrl = (function(){
       // insert item into html
       document.querySelector(UISelectors.itemList).insertAdjacentElement('beforeend', li);
     },
-
+    updateListItem: function (item){
+      document.getElementById(`item-${item.id}`).innerHTML = `<b>${item.name}: </b> <em> ${item.calories} Calories</em>
+      <a href="#" class="secondary-content">
+        <i class="fa fa-pencil edit-item"></i>
+      </a>`;
+      // let listItems = document.querySelectorAll(UISelectors.listItems); // give us a nodeList an we need to loop, but we cannot use forEach - mmust turn into array
+      // listItems = Array.from(listItems);
+      // // now ew can loop
+      // listItems.forEach(function(listItem){
+      //   const itemId = listItem.getAttribute('id');
+      //   if(itemId === `item-${item.id}`){
+      //     document.querySelector(`#${itemId}`).innerHTML = `<b>${item.name}: </b> <em> ${item.calories} Calories</em>
+      //     <a href="#" class="secondary-content">
+      //       <i class="fa fa-pencil edit-item"></i>
+      //     </a>`;
+      //   }
+      // });
+    },
     clearIputs: function (){
       document.querySelector(UISelectors.itemNameInput).value = '';
       document.querySelector(UISelectors.itemCaloriesInput).value = '';
@@ -193,8 +239,25 @@ const App = (function(ItemCtrl, UICtrl){
     // Add item event
     document.querySelector(UISelectors.addBtn).addEventListener('click', itemAddSubmit);
 
+    // disable submit on enter on update / desable enter key
+    document.addEventListener('keypress', function(e){
+      if( e.keyCode === 13 || e.which === 13 ){
+        // 13 is key code for enter - second option on if is dore older browsers that don't know keyCode
+        e.preventDefault();
+        return false;
+      }
+    });
     // edit icon  click event
-    document.querySelector(UISelectors.itemList).addEventListener('click', itemUpdateSubmit);
+    document.querySelector(UISelectors.itemList).addEventListener('click', itemEditClick);
+
+    //Update event on edit
+    document.querySelector(UISelectors.updateBtn).addEventListener('click', itemUpdateSubmit);
+
+    //deletebtn event
+    document.querySelector(UISelectors.deleteBtn).addEventListener('click', itemDeleteSubmit);
+
+    //Back btn event
+    document.querySelector(UISelectors.backBtn).addEventListener('click', UICtrl.clearEditState);
   }
 
   // Add item submit
@@ -209,20 +272,19 @@ const App = (function(ItemCtrl, UICtrl){
       const newItem = ItemCtrl.addItem(input.name, input.calories);
       // Add item to UI list
       UICtrl.addListItem(newItem);
-      // clear inputs
-
       // get total calories
       const totalCalories = ItemCtrl.getTotalCalories();
       // add total cal to UI
       UICtrl.showTotalCalories(totalCalories);
 
+      // clear inputs
       UICtrl.clearIputs();
     }
 
     e.preventDefault();
   }
-  // update item on submit
-  const itemUpdateSubmit = function(e){
+  // click edtit btn to edit
+  const itemEditClick = function(e){
     // we have to use event delegation because the edit item is loaded after
     if(e.target.classList.contains('edit-item')){
       // get the list item ID (item-0, item-1 etc)
@@ -251,6 +313,40 @@ const App = (function(ItemCtrl, UICtrl){
 
     e.preventDefault();
   }
+
+  // update  item on submit updated btn
+  const itemUpdateSubmit = function (e) {
+    // we can use getItemInput to get input
+    const input = UICtrl.getItemInput();
+
+    // update item - we get item as an obj
+    const updateItem = ItemCtrl.updateItem(input.name, input.calories);
+
+    //  update item in ui
+    UICtrl.updateListItem(updateItem);
+
+    // get total calories
+    const totalCalories = ItemCtrl.getTotalCalories();
+    // add total cal to UI
+    UICtrl.showTotalCalories(totalCalories);
+
+    UICtrl.clearEditState();
+
+    e.preventDefault();
+  }
+
+  // delete item submit
+  const itemDeleteSubmit = function(){
+    
+    // // get id from current item
+    // const currentItem = ItemCtrl.getCurrentItem();
+
+    // // delete from data structure
+    // ItemCtrl.deleteItem(currentItem.id);
+    // e.preventDefault();
+  }
+
+
   // Public methods
   return {
     init: function(){
