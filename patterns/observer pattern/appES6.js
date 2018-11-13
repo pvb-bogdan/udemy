@@ -1,7 +1,5 @@
 // ES6 classes instead prototype
 
-// Observer useing prototypes
-
 class EventObserver {
   constructor(){
     this.observers = [];
