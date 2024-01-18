@@ -1,5 +1,5 @@
 // ASYNC AWAIT
-// async befor a function return a promise
+// async before a function return a promise
 // if we need to use a promise whitin a promise then we make use of await
 
 // async function myFunc(){
@@ -27,7 +27,7 @@
 
 // best ex async/await whit fetch
 
-async function getUsers(){
+async function getUsers(params){
   // here we wait from fetch call
   const response = await fetch('https://jsonplaceholder.typicode.com/users');
   // usually we need to use .then()twice, but now whit await is not need
@@ -35,7 +35,13 @@ async function getUsers(){
   // here we wait an only proceed once its resolved
   const data = await response.json();
   // only proceed once second promise in\s resolved
+
   return data
+  // return data.masp(a => a.name);
 }
 
-getUsers().then(users => console.log(users));
+getUsers().then(res => {
+  res.forEach(user => console.log(user.name, user.address.street))
+});
+
+//test commit
